@@ -37,13 +37,13 @@ This README focuses on GitHub Actions: how the pipeline is structured, what each
 
 ```mermaid
 flowchart TD
-	A[commit / PR] --> B{CI Triggers}
-	B --> C[Build Matrix per Service]
-	C --> D[Test & Verify]
-	D --> E[Package Artifacts]
-	E --> F[Upload Artifacts]
-	F --> G[Docker Build (optional)]
-	G --> H[Push to GHCR (on push)]
+	A[commit / PR] --> B{CI Triggers};
+	B --> C[Build Matrix per Service];
+	C --> D[Test & Verify];
+	D --> E[Package Artifacts];
+	E --> F[Upload Artifacts];
+	F --> G[Docker Build<br/>(optional)];
+	G --> H[Push to GHCR<br/>(on push)];
 ```
 
 ## How the GitHub Actions workflow works (at a glance)

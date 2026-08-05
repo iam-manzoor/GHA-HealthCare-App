@@ -1,0 +1,137 @@
+name: HealthCare Microservices CI
+
+# Section triggers the workflow on push or pull request events to the main or master branch, as well as manual triggers.
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+  workflow_dispatch:
+
+# Section sets the permissions for the workflow, allowing read access to repository contents.
+permissions:
+  contents: read
+
+# Section defines environment variables for the workflow, including the Java version and Sonar organization.
+env:
+  JAVA_VERSION: "17"
+  SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION || github.repository_owner }}
+
+# Section defines the jobs to be executed in the workflow, including unit tests, Sonar analysis, and Docker build for each microservice.
+jobs:
+# Section defines the unit-test job, which runs unit tests for each microservice in the matrix.
+  unit-test:
+    name: Unit tests - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false  # This setting allows all matrix jobs to run even if one fails, ensuring that all services are tested regardless of individual failures.
+      matrix:
+        service:
+          - appointment-service
+          - doctor-service
+          - patient-service
+          - report-service
+          - user-service
+    defaults:
+      run:
+        working-directory: healthcare-microservices/${{ matrix.service }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        timeout-minutes: 5
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        timeout-minutes: 5
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+# Section runs the unit tests for each microservice using Maven, with a timeout of 10 minutes.
+      - name: Run unit tests
+        timeout-minutes: 10
+        run: mvn -B -ntp test
+
+# Section defines the sonar job, which performs Sonar analysis for each microservice in the matrix.
+  sonar:
+    name: Sonar analysis - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: unit-test
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - appointment-service
+          - doctor-service
+          - patient-service
+          - report-service
+          - user-service
+    defaults:
+      run:
+        working-directory: healthcare-microservices/${{ matrix.service }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        timeout-minutes: 5
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        timeout-minutes: 5
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      - name: Run tests and Sonar analysis
+        if: ${{ env.SONAR_TOKEN != '' }}
+        timeout-minutes: 15
+        run: >
+          mvn -B -ntp verify sonar:sonar
+          -Dsonar.host.url=https://sonarcloud.io
+          -Dsonar.organization=${{ env.SONAR_ORGANIZATION }}
+          -Dsonar.projectKey=${{ env.SONAR_ORGANIZATION }}_${{ matrix.service }}
+          -Dsonar.projectName=${{ matrix.service }}
+
+      - name: Skip Sonar analysis
+        if: ${{ env.SONAR_TOKEN == '' }}
+        timeout-minutes: 1
+        run: echo "SONAR_TOKEN is not configured; skipping Sonar analysis."
+
+  docker-build:
+    name: Docker build - ${{ matrix.service }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: 
+      - unit-test
+      - sonar
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - appointment-service
+          - doctor-service
+          - patient-service
+          - report-service
+          - user-service
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        timeout-minutes: 5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        timeout-minutes: 5
+
+      - name: Build service image
+        timeout-minutes: 15
+        uses: docker/build-push-action@v6
+        with:
+          context: ./healthcare-microservices/${{ matrix.service }}
+          push: false
+          tags: healthcare/${{ matrix.service }}:ci

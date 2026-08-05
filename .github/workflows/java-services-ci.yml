@@ -15,7 +15,7 @@ permissions:
 
 # Section defines environment variables for the workflow, including the Java version and Sonar organization.
 env:
-  JAVA_VERSION: "17"
+  JAVA_VERSION: "21"
   SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION || github.repository_owner }}
 
 # Section defines the jobs to be executed in the workflow, including unit tests, Sonar analysis, and Docker build for each microservice.

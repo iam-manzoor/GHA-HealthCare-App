@@ -42,8 +42,8 @@ flowchart TD
 	C --> D[Test & Verify];
 	D --> E[Package Artifacts];
 	E --> F[Upload Artifacts];
-	F --> G[Docker Build<br/>(optional)];
-	G --> H[Push to GHCR<br/>(on push)];
+	F --> G[Docker Build (optional)];
+	G --> H[Push to GHCR (on push)];
 ```
 
 ## How the GitHub Actions workflow works (at a glance)

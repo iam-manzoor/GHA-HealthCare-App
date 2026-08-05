@@ -28,7 +28,7 @@ permissions:
   pull-requests: read
 
 env:
-  JAVA_VERSION: "21"
+  JAVA_VERSION: "22"
   SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION || github.repository_owner }}
 
 jobs:

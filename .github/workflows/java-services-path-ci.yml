@@ -38,6 +38,7 @@ jobs:
     timeout-minutes: 10
     # outputs section stores list of changed services and their count.
     # It gets the values at the end of each step and makes them avaoalbel to other jobs in the workflow.
+    # Variable initilization to store the outcome of the job.
     outputs:
       services: ${{ steps.service-matrix.outputs.services }}
       service_count: ${{ steps.service-matrix.outputs.service_count }}

@@ -45,6 +45,8 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
+        # Git commit history download. fetch-depth: 0 entire commit history. 1 only the latest commit. 2 last two commits, and so on. 
+        # 0 is required for the paths-filter action to work correctly.
         with:
           fetch-depth: 0
         timeout-minutes: 5
@@ -53,6 +55,7 @@ jobs:
         id: filter
         # The condition ensures that it executes only for push and pull request events.
         if: ${{ github.event_name != 'workflow_dispatch' }}
+        # The dorny/paths-filter action is used to detect changes in specific paths of the repository.
         uses: dorny/paths-filter@v3
         timeout-minutes: 3
         with:
@@ -80,7 +83,8 @@ jobs:
         env:
           CHANGED_SERVICES: ${{ steps.filter.outputs.changes }}
           SERVICE_COUNT: ${{ steps.filter.outputs.count }}
-# The following step sets the outputs of the job based on the event type. If the event is a workflow_dispatch, it sets the outputs to include all services. Otherwise, it uses the values from the previous step.
+# The following step sets the outputs of the job based on the event type. 
+# If the event is a workflow_dispatch, it sets the outputs to include all services. Otherwise, it uses the values from the previous step.
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo 'services=["appointment-service","doctor-service","patient-service","report-service","user-service"]' >> "$GITHUB_OUTPUT"

@@ -75,7 +75,7 @@ jobs:
             user-service:
               - "healthcare-microservices/user-service/**"
               - ".github/workflows/java-services-path-ci.yml"
-              
+
       - name: Debug paths-filter outputs
         run: |
           echo "Changes = '${{ steps.filter.outputs.changes }}'"
@@ -104,7 +104,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.service_count != '0' }}
+    if: ${{ needs.detect-changes.outputs.services != '[]' }}
     strategy:
       fail-fast: false
       matrix:

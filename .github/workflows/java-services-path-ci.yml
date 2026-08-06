@@ -52,6 +52,9 @@ jobs:
         timeout-minutes: 5
 
       - name: Detect changed service paths
+        run: |
+          echo "Changes = '${{ steps.filter.outputs.changes }}'"
+          echo "Count   = '${{ steps.filter.outputs.count }}'"
         id: filter
         # The condition ensures that it executes only for push and pull request events.
         if: ${{ github.event_name != 'workflow_dispatch' }}
@@ -90,8 +93,8 @@ jobs:
             echo 'services=["appointment-service","doctor-service","patient-service","report-service","user-service"]' >> "$GITHUB_OUTPUT"
             echo 'service_count=5' >> "$GITHUB_OUTPUT"
           else
-            echo "services=${CHANGED_SERVICES:-[]}"
-            echo "service_count=${SERVICE_COUNT:-0}"
+            echo "services=${CHANGED_SERVICES:-[]}" >> "$GITHUB_OUTPUT"
+            echo "service_count=${SERVICE_COUNT:-0}" >> "$GITHUB_OUTPUT"
           fi
 
   unit-test:
@@ -99,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: detect-changes
-    #if: ${{ needs.detect-changes.outputs.service_count != '0' }}
+    if: ${{ needs.detect-changes.outputs.service_count != '0' }}
     strategy:
       fail-fast: false
       matrix:

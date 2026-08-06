@@ -52,9 +52,6 @@ jobs:
         timeout-minutes: 5
 
       - name: Detect changed service paths
-        run: |
-          echo "Changes = '${{ steps.filter.outputs.changes }}'"
-          echo "Count   = '${{ steps.filter.outputs.count }}'"
         id: filter
         # The condition ensures that it executes only for push and pull request events.
         if: ${{ github.event_name != 'workflow_dispatch' }}
@@ -78,6 +75,11 @@ jobs:
             user-service:
               - "healthcare-microservices/user-service/**"
               - ".github/workflows/java-services-path-ci.yml"
+              
+      - name: Debug paths-filter outputs
+        run: |
+          echo "Changes = '${{ steps.filter.outputs.changes }}'"
+          echo "Count   = '${{ steps.filter.outputs.count }}'"
 
 # Resulting values gets stored in the outputs of the step stored in the temporary environment variables CHANGED_SERVICES and SERVICE_COUNT. These values are then used to set the outputs of the job.
       - name: Build service matrix

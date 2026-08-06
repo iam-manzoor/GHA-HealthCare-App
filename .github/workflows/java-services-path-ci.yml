@@ -136,7 +136,7 @@ jobs:
     needs:
       - detect-changes
       - unit-test
-    if: ${{ needs.detect-changes.outputs.service_count != '0' }}
+    if: ${{ needs.detect-changes.outputs.services != '[]' }}
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     strategy:
@@ -182,7 +182,7 @@ jobs:
       - detect-changes
       - unit-test
       - sonar
-    if: ${{ needs.detect-changes.outputs.service_count != '0' }}
+    if: ${{ needs.detect-changes.outputs.services != '[]' }}
     strategy:
       fail-fast: false
       matrix:

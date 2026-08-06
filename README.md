@@ -4,7 +4,7 @@
 GitHub Actions is an integrated CI/CD automation system that runs workflow definitions stored in a repository. It automates software workflows by responding to repository events (push, pull_request, schedule, workflow_dispatch) and executing defined jobs on hosted or self-hosted runners. In modern DevOps, GitHub Actions orchestrates build, test, analysis, and publishing tasks, enabling repeatable pipelines and fast feedback loops directly inside the repository.
 
 ## Project Architecture Overview
-This repository houses five distinct microservices. Replace the placeholders below with your actual service names when ready:
+This repository houses five distinct microservices.
 
 - appointment-service
 - doctor-service

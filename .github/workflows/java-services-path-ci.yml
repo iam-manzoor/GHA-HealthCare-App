@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: detect-changes
-    if: ${{ needs.detect-changes.outputs.service_count != '0' }}
+    #if: ${{ needs.detect-changes.outputs.service_count != '0' }}
     strategy:
       fail-fast: false
       matrix:
